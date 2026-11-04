@@ -1,3 +1,4 @@
+
 const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
@@ -35,7 +36,55 @@ app.get("/expedientes", (req, res) => {
 
         res.json(expedientes);
     } catch (error) {
-        res.status(500).json({ mensaje: "Error al obtener expedientes" });
+        res.status(500).json({
+            mensaje: "Error al obtener expedientes"
+        });
+    }
+});
+
+// Buscar expedientes por texto
+// IMPORTANTE: esta ruta debe ir antes de /expedientes/:folio
+app.get("/expedientes/buscar", (req, res) => {
+    try {
+        const texto = (req.query.texto || "").toLowerCase();
+
+        const archivos = fs.readdirSync(carpetaExpedientes);
+
+        const expedientes = archivos
+            .filter(archivo => archivo.endsWith(".json"))
+            .map(archivo => {
+                const contenido = fs.readFileSync(
+                    path.join(carpetaExpedientes, archivo),
+                    "utf8"
+                );
+                return JSON.parse(contenido);
+            });
+
+        const resultados = expedientes.filter(expediente => {
+            const folio = String(expediente.folio || "").toLowerCase();
+            const operativo = String(
+                expediente.nombreOperativo ||
+                expediente.operativo ||
+                expediente.nombre ||
+                ""
+            ).toLowerCase();
+            const descripcion = String(
+                expediente.descripcion || ""
+            ).toLowerCase();
+
+            return (
+                folio.includes(texto) ||
+                operativo.includes(texto) ||
+                descripcion.includes(texto)
+            );
+        });
+
+        res.json(resultados);
+
+    } catch (error) {
+        res.status(500).json({
+            mensaje: "Error al buscar expedientes"
+        });
     }
 });
 
@@ -45,7 +94,9 @@ app.post("/expedientes", (req, res) => {
         const expediente = req.body;
 
         if (!expediente.folio) {
-            return res.status(400).json({ mensaje: "El folio es obligatorio" });
+            return res.status(400).json({
+                mensaje: "El folio es obligatorio"
+            });
         }
 
         const rutaArchivo = path.join(
@@ -54,21 +105,36 @@ app.post("/expedientes", (req, res) => {
         );
 
         if (fs.existsSync(rutaArchivo)) {
-            return res.status(409).json({ mensaje: "El folio ya existe" });
+            return res.status(409).json({
+                mensaje: "El folio ya existe"
+            });
         }
+
+        const fechaActual = new Date().toISOString();
+
+        const nuevoExpediente = {
+            ...expediente,
+            estatus: expediente.estatus || "Abierto",
+            prioridad: expediente.prioridad || "Media",
+            fechaCreacion: expediente.fechaCreacion || fechaActual,
+            fechaModificacion: expediente.fechaModificacion || fechaActual
+        };
 
         fs.writeFileSync(
             rutaArchivo,
-            JSON.stringify(expediente, null, 2),
+            JSON.stringify(nuevoExpediente, null, 2),
             "utf8"
         );
 
         res.status(201).json({
             mensaje: "Expediente registrado correctamente",
-            expediente
+            expediente: nuevoExpediente
         });
+
     } catch (error) {
-        res.status(500).json({ mensaje: "Error al registrar expediente" });
+        res.status(500).json({
+            mensaje: "Error al registrar expediente"
+        });
     }
 });
 
@@ -80,7 +146,9 @@ app.get("/expedientes/:folio", (req, res) => {
     );
 
     if (!fs.existsSync(rutaArchivo)) {
-        return res.status(404).json({ mensaje: "Expediente no encontrado" });
+        return res.status(404).json({
+            mensaje: "Expediente no encontrado"
+        });
     }
 
     const contenido = fs.readFileSync(rutaArchivo, "utf8");
@@ -89,30 +157,45 @@ app.get("/expedientes/:folio", (req, res) => {
 
 // Actualizar un expediente
 app.put("/expedientes/:folio", (req, res) => {
-    const rutaArchivo = path.join(
-        carpetaExpedientes,
-        `${req.params.folio}.json`
-    );
+    try {
+        const rutaArchivo = path.join(
+            carpetaExpedientes,
+            `${req.params.folio}.json`
+        );
 
-    if (!fs.existsSync(rutaArchivo)) {
-        return res.status(404).json({ mensaje: "Expediente no encontrado" });
+        if (!fs.existsSync(rutaArchivo)) {
+            return res.status(404).json({
+                mensaje: "Expediente no encontrado"
+            });
+        }
+
+        const contenido = fs.readFileSync(rutaArchivo, "utf8");
+        const expedienteAnterior = JSON.parse(contenido);
+
+        const expedienteActualizado = {
+            ...expedienteAnterior,
+            ...req.body,
+            folio: req.params.folio,
+            fechaCreacion: expedienteAnterior.fechaCreacion,
+            fechaModificacion: new Date().toISOString()
+        };
+
+        fs.writeFileSync(
+            rutaArchivo,
+            JSON.stringify(expedienteActualizado, null, 2),
+            "utf8"
+        );
+
+        res.json({
+            mensaje: "Expediente actualizado correctamente",
+            expediente: expedienteActualizado
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            mensaje: "Error al actualizar expediente"
+        });
     }
-
-    const expedienteActualizado = {
-        ...req.body,
-        folio: req.params.folio
-    };
-
-    fs.writeFileSync(
-        rutaArchivo,
-        JSON.stringify(expedienteActualizado, null, 2),
-        "utf8"
-    );
-
-    res.json({
-        mensaje: "Expediente actualizado correctamente",
-        expediente: expedienteActualizado
-    });
 });
 
 // Eliminar un expediente
@@ -123,12 +206,16 @@ app.delete("/expedientes/:folio", (req, res) => {
     );
 
     if (!fs.existsSync(rutaArchivo)) {
-        return res.status(404).json({ mensaje: "Expediente no encontrado" });
+        return res.status(404).json({
+            mensaje: "Expediente no encontrado"
+        });
     }
 
     fs.unlinkSync(rutaArchivo);
 
-    res.json({ mensaje: "Expediente eliminado correctamente" });
+    res.json({
+        mensaje: "Expediente eliminado correctamente"
+    });
 });
 
 // Iniciar servidor

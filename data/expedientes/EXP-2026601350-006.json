@@ -1,0 +1,12 @@
+{
+  "folio": "EXP-2026601350-006",
+  "nombre": "Pedro Gómez",
+  "tipoIncidente": "Fraude",
+  "zona": "Centro",
+  "fecha": "2026-11-04",
+  "descripcion": "Fraude electrónico",
+  "estatus": "Cerrado",
+  "prioridad": "Alta",
+  "fechaCreacion": "2026-11-04T23:21:06.197Z",
+  "fechaModificacion": "2026-11-04T23:21:06.197Z"
+}

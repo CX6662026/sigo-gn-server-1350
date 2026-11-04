@@ -1,0 +1,12 @@
+{
+  "folio": "EXP-2026601350-003",
+  "nombre": "María Torres",
+  "tipoIncidente": "Fraude",
+  "zona": "Sur",
+  "fecha": "2026-11-04",
+  "descripcion": "Reporte de fraude",
+  "estatus": "Cerrado",
+  "prioridad": "Media",
+  "fechaCreacion": "2026-11-04T23:21:06.145Z",
+  "fechaModificacion": "2026-11-04T23:21:06.145Z"
+}

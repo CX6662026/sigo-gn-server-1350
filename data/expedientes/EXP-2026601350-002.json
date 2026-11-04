@@ -1,0 +1,12 @@
+{
+  "folio": "EXP-2026601350-002",
+  "nombre": "Carlos Pérez",
+  "tipoIncidente": "Asalto",
+  "zona": "Norte",
+  "fecha": "2026-11-04",
+  "descripcion": "Asalto en vía pública",
+  "estatus": "En proceso",
+  "prioridad": "Alta",
+  "fechaCreacion": "2026-11-04T23:21:06.134Z",
+  "fechaModificacion": "2026-11-04T23:21:06.134Z"
+}

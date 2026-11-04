@@ -1,0 +1,12 @@
+{
+  "folio": "EXP-2026601350-008",
+  "nombre": "Miguel Flores",
+  "tipoIncidente": "Robo",
+  "zona": "Sur",
+  "fecha": "2026-11-04",
+  "descripcion": "Robo a domicilio",
+  "estatus": "En proceso",
+  "prioridad": "Media",
+  "fechaCreacion": "2026-11-04T23:21:06.212Z",
+  "fechaModificacion": "2026-11-04T23:21:06.212Z"
+}

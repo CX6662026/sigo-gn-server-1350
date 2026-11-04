@@ -1,0 +1,12 @@
+{
+  "folio": "EXP-2026601350-004",
+  "nombre": "José Ramírez",
+  "tipoIncidente": "Robo",
+  "zona": "Oriente",
+  "fecha": "2026-11-04",
+  "descripcion": "Robo a negocio",
+  "estatus": "Abierto",
+  "prioridad": "Media",
+  "fechaCreacion": "2026-11-04T23:21:06.151Z",
+  "fechaModificacion": "2026-11-04T23:21:06.151Z"
+}
